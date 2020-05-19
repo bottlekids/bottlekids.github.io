@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Plamen Ausbildung</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom fonts for this template -->
+  <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet">
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="css/resume.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+    <a class="navbar-brand js-scroll-trigger" href="#page-top">
+      <span class="d-block d-lg-none"></span>
+      <span class="d-none d-lg-block">
+        <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="img/profile.jpg" alt="">
+      </span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link js-scroll-trigger" href="#project1">Project 1: Simple tiny flask API</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link js-scroll-trigger" href="#project2">Project 2: Simple tiny scraping project</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link js-scroll-trigger" href="#project3">Project 3: Simple backtracking algorithm</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid p-0">
+
+    <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="project1">
+      <div class="w-100">
+        <h1 class="mb-0">3
+          <span class="text-primary">SIMPLE PROJECTS</span>
+        </h1>
+        <div class="subheading mb-5">as part of my application for an Ausbildung zum Fachinformatiker
+        </div>
+
+        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="resume-content">
+            <h3 class="mb-0">1. Simple tiny flask API</h3>
+            <p>This program grabs the latest news in Germany from https://newsapi.org/, removes the ones with "Corona" in the title and creates a small JSON API with the "filtered" news.</p>
+
+            <p>
+              <pre>
+                  <code>
+from flask import Flask,jsonify
+import requests
+
+# First we get the latest news in Germany with the help of NewsAPI (https://newsapi.org/)
+url = ('http://newsapi.org/v2/top-headlines?'
+       'country=de&'
+       'apiKey=76fb69866b1d42fdb58866ba66f4f45c')
+response = requests.get(url)
+news_list = response.json()
+
+# then we iterate over them. If the the title does not contain "Corona", we dump it into a JSON-friendly list
+
+json_friendly_news_list = []
+
+for item in news_list["articles"]:
+    if 'Corona' not in item["title"]:
+        new_news_item = {
+            "title": item["title"],
+            "content": item["content"],
+            "url": item["url"]
+        }
+        json_friendly_news_list.append(new_news_item)
+
+# finally, we create the API with flask
+app = Flask(__name__)
+
+@app.route('/', methods=["GET"])
+def get_json():
+    return jsonify({"news": json_friendly_news_list})
+
+if __name__ == "__main__":
+    app.run(debug=True)
+                  </code>  
+              </pre>
+            </p>
+
+          </div>
+        </div>
+
+
+
+
+      </div>
+    </section>
+
+    <hr class="m-0">
+
+    <section class="resume-section p-3 p-lg-5 d-flex justify-content-center" id="project2">
+      <div class="w-100">
+        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="resume-content">
+            <h3 class="mb-0">2. Simple tiny scraping project</h3>
+            <p>All this program does is scrape some dates from https://www.berlin.de for Sundays, during which shops in Berlin are open and then compare them against today's date. If it´s a match, it returns True.</p>
+            <p> 
+              <pre>
+                  <code>
+import re
+from bs4 import BeautifulSoup
+import requests
+import datetime
+
+# datetime - get today´s date and make it the same format as the one on the website we are scraping.
+get_date = str(datetime.date.today())
+today = datetime.datetime.strptime(get_date, '%Y-%m-%d').strftime('%d.%m.%Y')
+
+# beautiful soup - the site has 2 tables. The one we need is the first.
+link_to_site = "https://www.berlin.de/sen/arbeit/beschaeftigung/arbeitsschutz/artikel.761558.php"
+source = requests.get(link_to_site).text
+soup = BeautifulSoup(source, "html5lib")
+get_top_table = str(soup.find("ul", class_="list-tablelist border oddeven"))
+
+# regular expressions - we don't need everything in the table, just the dates
+pattern = re.compile(r'\d\d\.\d\d\.\d\d\d\d')
+dates_in_the_table = [str(match.group(0)) for match in pattern.finditer(get_top_table)]
+# after all the dates in the table are found, they are converted to strings and now we can compare them to today's date
+
+print(today in dates_in_the_table)
+                  </code>  
+              </pre>
+            </p>
+          </div>
+          <div class="resume-date text-md-right">
+            <span class="text-primary">March 2013 - Present</span>
+          </div>
+        </div>
+
+
+    </section>
+
+    <hr class="m-0">
+
+    <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="project3">
+      <div class="w-100">
+        <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
+          <div class="resume-content">
+            <h3 class="mb-0">3. Simple Backtracking Algorithm</h3>
+            <p>This is a simple backtracking algorithm which uses recursion to plot hotel reservations on a simple calendar.</p>
+
+             <p> 
+              <pre>
+                  <code>
+""" 
+The reservations are instances of a Python class and the calendar is just a list of lists. 
+Some of the guests are already checked in and can't be moved. All rooms are of the same type. 
+"""
+
+from tabulate import tabulate 
+
+guest_list = []
+empty_cell = " ______ "
+
+
+week_overview = [[empty_cell for day in range(7)] for room in range(10)]
+
+
+class Booking:
+
+  def __init__ (self, name, check_in, check_out, fix, room):
+    self.name = name 
+    self.check_in = check_in
+    self.check_out = check_out
+    self.fix = fix
+    self.room = room
+    self.assigned = False
+
+    guest_list.append(self)
+
+    if self.check_in >= self.check_out:
+      print (f"The check-in date for guest {self} is the same as or later than the check-out date. Please revise.")
+
+
+  def __repr__(self):
+    return self.name[:8]
+
+  def populate_week_overview(self, room_number, reverse):
+    date_counter = self.check_in
+    # Because a backtracking algorithm requires that the object erase itself if its next recursion doesn't   
+    # satisfy the conditions, I add a parameter "reverse". If it returns True, the object erases itself. 
+    if reverse:
+      while date_counter <= self.check_out:
+        week_overview [room_number][date_counter] = empty_cell
+        date_counter += 1
+    while date_counter <= self.check_out:
+      week_overview [room_number][date_counter] = self
+      date_counter += 1
+        
+# Creating some guests:
+guest1 = Booking("Tom", 1, 4, True, 1)
+guest2 = Booking("Ron", 0, 1, True, 3)
+guest3 = Booking("Leslie", 1, 5, False, None)
+guest4 = Booking("April", 4, 6, False, None)
+guest5 = Booking("Andy", 0, 3, False, None)
+guest6 = Booking("Ben", 5, 6, False, None)
+guest7 = Booking("Dona", 3, 4, True, 9)
+guest8 = Booking("Li'l Sebastian", 1, 4, False, None)
+guest9 = Booking("Jerry", 2, 4, False, None)
+guest10 = Booking("Chris", 1, 2, False, None)
+guest11 = Booking("Ann", 0, 6, False, None)
+guest12 = Booking("Perd", 0, 6, False, None)
+guest13 = Booking("Mark", 1, 6, False, None)
+guest14 = Booking("Tammy2", 0, 4, False, None)
+
+# Uncomment this guest to overbook
+#guest15 = Booking("Tammy1", 4, 6, False, None)
+
+# Arrange by check-in 
+guest_list.sort(key=lambda x: x.check_in)
+
+def plot_fixed():
+  for guest in guest_list:
+    if guest.fix == True:
+      guest.populate_week_overview(guest.room, reverse=False)
+      guest.assigned = True
+
+# This function checks if all fields from check-in to check-out are free so the guest can be given a room
+def is_possible(guest, room):
+  for cell in room[guest.check_in:guest.check_out]:
+    if isinstance (cell, Booking):
+      return False
+  return True 
+  
+def optimal_arrangement():
+  for guest in guest_list:
+    # "assigned" is a class variable which returns True if the guest already has a room
+    if guest.assigned == False:
+      # Now for each guest we go through every room to see if there is space for them
+      for index, room in enumerate(week_overview):
+        if is_possible(guest, room):
+          # If there is space, we plot the guest and run the function again
+          guest.populate_week_overview(index, reverse=False)
+          guest.assigned = True
+          optimal_arrangement()
+          """
+          Our function runs recursively and every time it finds a spot for a guest it will change their
+          "assigned" variable to True so eventually there weill be none left and the function will 
+          print out the solution. For this to make sense there has to be a meaningful relationship between 
+          the objects we iterate over in our guest list so that a step back could enable an efficient 
+          second attempt in the future. If the guests are randomly arranged in the guest list
+          maybe the function will have to go back hundreds of times to a very early instance of its 
+          recursion which is inefficient. So the guest list is ordered by check-in and we go
+          from left to right.    
+          """ 
+          guest.populate_week_overview(index, reverse=True)
+          guest.assigned = False
+      return
+  print(tabulate(week_overview))  
+  input("Satisfactory? ")
+
+
+
+plot_fixed()
+
+optimal_arrangement()
+
+# If there are solutions we will remain in the recursive function. Otherwise we print out the error message:
+print("Overbooked")
+
+                  </code>  
+              </pre>
+            </p>    
+            <p>For this page I used this template: <a href="https://startbootstrap.com/themes/resume/">https://startbootstrap.com/themes/resume/</a></p>                
+          </div>
+          
+
+
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Plugin JavaScript -->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for this template -->
+  <script src="js/resume.min.js"></script>
+
+</body>
+
+</html>
